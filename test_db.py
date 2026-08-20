@@ -33,13 +33,13 @@ connection = sqlite3.connect("database.db")
 #connection.close()
 
 #Testing fetching data from sessions
-cursor = connection.execute(
-    "SELECT id, course_id, date, duration, notes FROM sessions"
-)
+#cursor = connection.execute(
+#   "SELECT id, course_id, date, duration, notes FROM sessions"
+#)
 
-sessions = cursor.fetchall()
+#sessions = cursor.fetchall()
 
-for session in sessions:
-    print(session)
+#for session in sessions:
+#    print(session)
 
-connection.close()
+#connection.close()

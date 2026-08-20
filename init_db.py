@@ -2,6 +2,7 @@ import sqlite3
 
 connection = sqlite3.connect("database.db") 
 
+#Creating Tables
 connection.execute("""
 CREATE TABLE IF NOT EXISTS courses(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
