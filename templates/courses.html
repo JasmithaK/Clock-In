@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Clock In - Courses</title>
+    </head>
+
+    <body>
+
+        <h1>My Courses</h1>
+
+        <form method="POST">
+            <label for="name">Course Name:</label>
+            <input type="text" id="name" name="name">
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea>
+
+            <button type="submit" name="action" value="add">Add Course</button>
+        </form>
+
+        <!--Flasks template language -->
+        <!--Means for every course Flask sends to this page follow this HTML -->
+        {% for course in courses %}
+
+            <!--Display the name-->
+            <h2>{{ course["name"] }}</h2>
+
+             <!--Display the courses description-->
+            <p>{{ course["description"] }}</p>
+
+            <form method="POST">
+                <input type="hidden" name="course_id" value="{{ course['id'] }}">
+                <button type="submit" name="action" value="delete">Delete</button>
+            </form>
+        {% endfor %}
+
+    </body>
+</html>
