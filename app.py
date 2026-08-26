@@ -31,8 +31,21 @@ def courses():
         else: 
             name = request.form["name"]
             description = request.form["description"]
-            
+
+            if not name:
+                return "Course name is required."
+
             connection = get_db__connection()
+
+            existing_course = connection.execute(
+                "SELECT * FROM courses WHERE name = ?",
+                (name,)
+            ).fetchone()
+
+            if existing_course:
+                connection.close()
+                return "A course with that name already exists."
+            
             
             connection.execute(
                 "INSERT INTO courses (name, description) VALUES (?, ?)",
@@ -52,6 +65,55 @@ def courses():
     connection.close()
 
     return render_template("courses.html", courses=courses)
+
+@app.route("/sessions", methods=["GET", "POST"])
+def sessions():
+
+    if request.method == "POST":
+        course_id = request.form["course_id"]
+        date = request.form["date"]
+        duration = request.form["duration"]
+        notes = request.form["notes"]
+
+        if not course_id or not date or not duration:
+            return "Please fill out all required fields."
+
+        try:
+             duration = int(duration)
+        except ValueError:
+            return "Study duration must be a number."
+        
+        if int(duration) <= 0:
+            return "Study duration must be greater than 0 minutes."
+
+        connection = get_db__connection()
+                    
+        connection.execute(
+            "INSERT INTO sessions (course_id, date, duration, notes) VALUES (?, ?, ?, ?)",
+            (course_id, date, duration, notes)
+        )
+                    
+        connection.commit()
+        connection.close()
+
+    connection = get_db__connection()
+
+    courses = connection.execute(
+        "SELECT * FROM courses"
+    ).fetchall()
+
+    sessions = connection.execute(
+        """
+        SELECT sessions.date, sessions.duration, sessions.notes, courses.name
+        FROM sessions
+        JOIN courses ON sessions.course_id = courses.id
+        """
+    ).fetchall()
+
+    connection.close()
+
+    return render_template("sessions.html", courses=courses, sessions=sessions)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
