@@ -32,6 +32,7 @@ def courses():
             name = request.form["name"]
             description = request.form["description"]
 
+            #Helps prevent errors
             if not name:
                 return "Course name is required."
 
