@@ -10,6 +10,7 @@
         <h1>Record Study Sessions</h1>
 
         <form method="POST">
+            <input type="hidden" name="action" value="create">
             <label for="course_id">Course:</label>
             <select id="course_id" name="course_id"> 
 
@@ -39,10 +40,22 @@
 
         {% for session in sessions %}
             <div>
+             
              <p>Course: {{ session["name"] }}</p>
              <p>Date: {{ session["date"] }}</p>
              <p>Duration: {{ session["duration"] }} minutes</p>
              <p>Notes: {{ session["notes"] }}</p>
+
+             <form method="POST">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="session_id" value="{{ session['id'] }}">
+                <button type="submit">Delete</button>
+             </form>
+
+            <form method="GET" action="/edit_session/{{ session['id'] }}">
+                <button type="submit">Edit</button>
+             </form>
+
             </div>
         {% endfor %}
            

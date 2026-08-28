@@ -71,31 +71,47 @@ def courses():
 def sessions():
 
     if request.method == "POST":
-        course_id = request.form["course_id"]
-        date = request.form["date"]
-        duration = request.form["duration"]
-        notes = request.form["notes"]
+        action = request.form["action"]
 
-        if not course_id or not date or not duration:
-            return "Please fill out all required fields."
+        if action == "delete":
+            session_id = request.form["session_id"]
 
-        try:
-             duration = int(duration)
-        except ValueError:
-            return "Study duration must be a number."
-        
-        if int(duration) <= 0:
-            return "Study duration must be greater than 0 minutes."
+            connection = get_db__connection()
 
-        connection = get_db__connection()
-                    
-        connection.execute(
-            "INSERT INTO sessions (course_id, date, duration, notes) VALUES (?, ?, ?, ?)",
-            (course_id, date, duration, notes)
-        )
-                    
-        connection.commit()
-        connection.close()
+            connection.execute(
+                "DELETE FROM sessions WHERE id = ?",
+                (session_id,)
+            )
+
+            connection.commit()
+            connection.close()
+
+        else:
+            course_id = request.form["course_id"]
+            date = request.form["date"]
+            duration = request.form["duration"]
+            notes = request.form["notes"]
+
+            if not course_id or not date or not duration:
+                return "Please fill out all required fields."
+
+            try:
+                duration = int(duration)
+            except ValueError:
+                return "Study duration must be a number."
+
+            if duration <= 0:
+                return "Study duration must be greater than 0 minutes."
+
+            connection = get_db__connection()
+
+            connection.execute(
+                "INSERT INTO sessions (course_id, date, duration, notes) VALUES (?, ?, ?, ?)",
+                (course_id, date, duration, notes)
+            )
+
+            connection.commit()
+            connection.close()
 
     connection = get_db__connection()
 
@@ -105,7 +121,7 @@ def sessions():
 
     sessions = connection.execute(
         """
-        SELECT sessions.date, sessions.duration, sessions.notes, courses.name
+        SELECT sessions.id, sessions.date, sessions.duration, sessions.notes, courses.name
         FROM sessions
         JOIN courses ON sessions.course_id = courses.id
         """
@@ -115,6 +131,53 @@ def sessions():
 
     return render_template("sessions.html", courses=courses, sessions=sessions)
 
+@app.route("/edit_session/<int:session_id>", methods=["GET", "POST"])
+def edit_session(session_id):
+
+    if request.method == "POST":
+        action = request.form["action"]
+
+        if action == "update":
+            date = request.form["date"]
+            duration = request.form["duration"]
+            notes = request.form["notes"]
+
+            if not date or not duration:
+                return "Please fill out all required fields"
+
+            try: 
+                duration = int(duration)
+
+            except ValueError:
+                return "Study duration must be a number."
+
+            if duration <= 0:
+                return "Study duration must be greater than 0."
+
+            connection = get_db__connection()
+
+            connection.execute(
+                """
+                UPDATE sessions
+                SET date = ?, duration = ?, notes = ?
+                WHERE id = ?
+                """,
+                (date, duration, notes, session_id)
+            )
+
+            connection.commit()
+            connection.close()
+
+
+    connection = get_db__connection()
+
+    session = connection.execute(
+        "SELECT * FROM sessions WHERE id = ?",
+        (session_id,)
+    ).fetchone()
+
+    connection.close()
+    return render_template("edit_session.html", session=session)
 
 if __name__ == "__main__":
     app.run(debug=True)
