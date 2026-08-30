@@ -36,6 +36,26 @@
                 
         </form>
 
+        <form method="GET">
+            <label for="filter_course">Course:</label>
+
+            <select id="filter_course" name="course_id">
+                <option value="">All Courses</option>
+
+                {% for course in courses %}
+                    <option value="{{ course['id'] }}">
+                        {{ course['name'] }}
+                    </option>
+                {% endfor %}
+
+                <label for="filter_date">Date:</label>
+                <input type="date" id="filter_date" name="date">
+
+                <button type="submit">Filter</button>
+
+            </select>
+        </form>
+
         <h2>Study Session History</h2>
 
         {% for session in sessions %}

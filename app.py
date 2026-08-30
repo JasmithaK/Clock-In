@@ -70,6 +70,9 @@ def courses():
 @app.route("/sessions", methods=["GET", "POST"])
 def sessions():
 
+    course_id = request.args.get("course_id")
+    date = request.args.get("date")
+
     if request.method == "POST":
         action = request.form["action"]
 
@@ -119,13 +122,27 @@ def sessions():
         "SELECT * FROM courses"
     ).fetchall()
 
-    sessions = connection.execute(
-        """
+    query = """
         SELECT sessions.id, sessions.date, sessions.duration, sessions.notes, courses.name
         FROM sessions
         JOIN courses ON sessions.course_id = courses.id
         """
-    ).fetchall()
+
+    parameters = []
+
+    if course_id:
+        query += " WHERE sessions.course_id = ? "
+        parameters.append(course_id)
+
+    if date:
+        if course_id:
+            query += " AND sessions.date = ? "
+        else:
+            query += " WHERE sessions.date = ? "
+
+        parameters.append(date)
+
+    sessions = connection.execute(query, parameters).fetchall()
 
     connection.close()
 
@@ -178,6 +195,30 @@ def edit_session(session_id):
 
     connection.close()
     return render_template("edit_session.html", session=session)
+
+@app.route("/dashboard")
+def dashboard():
+    connection = get_db__connection()
+
+    total_study_time = connection.execute(
+        "SELECT SUM(duration) FROM sessions"
+    ).fetchone()[0]
+
+    study_time_by_course = connection.execute(
+        """ 
+        SELECT courses.name, SUM(sessions.duration) AS total_duration
+        FROM sessions 
+        JOIN courses on sessions.course_id = courses.id
+        GROUP BY courses.id
+        """
+    ).fetchall()
+
+    connection.close()
+    return render_template(
+        "dashboard.html",
+        total_study_time = total_study_time, 
+        study_time_by_course = study_time_by_course
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
