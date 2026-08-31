@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>{% block title %}Clock In{% endblock %}</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+    <body>
+
+        <nav>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/courses">Courses</a>
+            <a href="/sessions">Study Sessions</a>  
+        </nav>
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </body>
+</html>
