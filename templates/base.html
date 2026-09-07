@@ -1,24 +1,29 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<html>
-    <head>
-        <title>{% block title %}Clock In{% endblock %}</title>
+    <title>{% block title %}Clock In{% endblock %}</title>
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
 
-    <body>
+<body>
 
-        <nav>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/courses">Courses</a>
-            <a href="/sessions">Study Sessions</a>  
-        </nav>
+    <nav>
+        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('main.courses') }}">Courses</a>
+        <a href="{{ url_for('main.sessions') }}">Study Sessions</a>
+    </nav>
 
-        <main>
-            {% block content %}
-            {% endblock %}
-        </main>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 
-    </body>
+</body>
 </html>
