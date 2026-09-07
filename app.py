@@ -1,19 +1,24 @@
 import sqlite3
-from flask import Flask, render_template, request
+from flask import Flask, Blueprint, render_template, request, redirect, url_for
+
 app = Flask(__name__)
 
-#Python opens a conenction to database.db
+APP_URL_PREFIX = "/clock-in"
+
+main = Blueprint("main", __name__)
+
+#Python opens a conenction to database.db 
 def get_db__connection():
     connection = sqlite3.connect("database.db")
     #allows us to work with database results using the column names
     connection.row_factory = sqlite3.Row
     return connection
 
-@app.route("/courses", methods=["GET", "POST"])
+@main.route("/courses", methods=["GET", "POST"])
 def courses():
 
     if request.method == "POST":
-        action = request.form["action"] 
+        action = request.form["action"]
 
         if action == "delete":
             course_id = request.form["course_id"]
@@ -28,7 +33,7 @@ def courses():
             connection.commit()
             connection.close()
 
-        else: 
+        else:
             name = request.form["name"]
             description = request.form["description"]
 
@@ -46,16 +51,14 @@ def courses():
             if existing_course:
                 connection.close()
                 return "A course with that name already exists."
-            
-            
+
             connection.execute(
                 "INSERT INTO courses (name, description) VALUES (?, ?)",
                 (name, description)
             )
-            
+
             connection.commit()
             connection.close()
-        
 
     connection = get_db__connection()
 
@@ -67,7 +70,8 @@ def courses():
 
     return render_template("courses.html", courses=courses)
 
-@app.route("/sessions", methods=["GET", "POST"])
+
+@main.route("/sessions", methods=["GET", "POST"])
 def sessions():
 
     course_id = request.args.get("course_id")
@@ -123,10 +127,14 @@ def sessions():
     ).fetchall()
 
     query = """
-        SELECT sessions.id, sessions.date, sessions.duration, sessions.notes, courses.name
+        SELECT sessions.id,
+               sessions.date,
+               sessions.duration,
+               sessions.notes,
+               courses.name
         FROM sessions
         JOIN courses ON sessions.course_id = courses.id
-        """
+    """
 
     parameters = []
 
@@ -146,9 +154,14 @@ def sessions():
 
     connection.close()
 
-    return render_template("sessions.html", courses=courses, sessions=sessions)
+    return render_template(
+        "sessions.html",
+        courses=courses,
+        sessions=sessions
+    )
 
-@app.route("/edit_session/<int:session_id>", methods=["GET", "POST"])
+
+@main.route("/edit_session/<int:session_id>", methods=["GET", "POST"])
 def edit_session(session_id):
 
     if request.method == "POST":
@@ -162,9 +175,8 @@ def edit_session(session_id):
             if not date or not duration:
                 return "Please fill out all required fields"
 
-            try: 
+            try:
                 duration = int(duration)
-
             except ValueError:
                 return "Study duration must be a number."
 
@@ -185,7 +197,6 @@ def edit_session(session_id):
             connection.commit()
             connection.close()
 
-
     connection = get_db__connection()
 
     session = connection.execute(
@@ -194,10 +205,16 @@ def edit_session(session_id):
     ).fetchone()
 
     connection.close()
-    return render_template("edit_session.html", session=session)
 
-@app.route("/dashboard")
+    return render_template(
+        "edit_session.html",
+        session=session
+    )
+
+
+@main.route("/dashboard")
 def dashboard():
+
     connection = get_db__connection()
 
     total_study_time = connection.execute(
@@ -205,20 +222,39 @@ def dashboard():
     ).fetchone()[0]
 
     study_time_by_course = connection.execute(
-        """ 
-        SELECT courses.name, SUM(sessions.duration) AS total_duration
-        FROM sessions 
-        JOIN courses on sessions.course_id = courses.id
+        """
+        SELECT courses.name,
+               SUM(sessions.duration) AS total_duration
+        FROM sessions
+        JOIN courses ON sessions.course_id = courses.id
         GROUP BY courses.id
         """
     ).fetchall()
 
     connection.close()
+
     return render_template(
         "dashboard.html",
-        total_study_time = total_study_time, 
-        study_time_by_course = study_time_by_course
+        total_study_time=total_study_time,
+        study_time_by_course=study_time_by_course
     )
 
+
+# Register all routes under /clock-in
+app.register_blueprint(
+    main,
+    url_prefix=APP_URL_PREFIX
+)
+
+
+@app.route("/")
+def home():
+    return redirect(url_for("main.dashboard"))
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5001,
+        debug=True
+    )
