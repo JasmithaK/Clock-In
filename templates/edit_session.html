@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Clock In - Edit Study Session{% endblock %}
+
+{% block content %}
+
+    <h1>Edit Study Session</h1>
+
+    <div class = "edit-session-form">
+        <form method="POST">
+            <input type="hidden" name="action" value="update">
+
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" value="{{ session['date'] }}">
+
+            <label for="duration">Minutes Studied:</label>
+            <input type="number" id="duration" name="duration" value="{{ session['duration'] }}">
+
+            <label for="notes">Notes:</label>
+            <textarea id="notes" name="notes">{{ session['notes'] }}</textarea>
+
+            <button type="submit">Save Changes</button>
+
+        </form>
+    </div>
+
+{% endblock %}

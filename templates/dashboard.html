@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Clock In - Dashboard{% endblock %}
+
+{% block content %}
+
+<h1>Study Dashboard</h1>
+
+<div class="dashboard-metrics">
+
+    <div class="dashboard-metric">
+        <p class="metric-label">Total Study Time</p>
+        <p class="metric-value">{{ total_study_time }} min</p>
+    </div>
+
+    <div class="dashboard-metric">
+        <p class="metric-label">Courses Studied</p>
+        <p class="metric-value">{{ courses_studied }}</p>
+    </div>
+
+</div>
+
+
+<div class="dashboard-section-header">
+    <h2>Study Time by Course</h2>
+
+    <a href="{{ url_for('main.courses') }}">
+        View All
+    </a>
+</div>
+
+
+<div class="course-study-list">
+
+    {% for course in study_time_by_course %}
+
+        <div class="course-study-row">
+
+            <div class="course-study-info">
+                <span>{{ course["name"] }}</span>
+                <span>{{ course["total_duration"] }} min</span>
+            </div>
+
+            <progress
+                class="study-bar"
+                value="{{ course['percentage'] }}"
+                max="100">
+            </progress>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+<h2>Recent Study Sessions</h2>
+
+<div class="recent-session-list">
+
+    {% for session in recent_sessions %}
+
+        <div class="recent-session-row">
+
+            <span>{{ session["name"] }}</span>
+            <span>{{ session["date"] }}</span>
+            <span>{{ session["duration"] }} min</span>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

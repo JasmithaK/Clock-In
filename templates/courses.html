@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Clock In - Courses{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>My Courses</h1>
+        <p class="page-subtitle">
+            Manage the courses you are currently studying.
+        </p>
+    </div>
+
+
+    <div class="course-form-card">
+
+        <h2>Add Course</h2>
+
+        <p class="required-note">
+            Fields marked with <span class="required">*</span> are required.
+        </p>
+
+        <form method="POST">
+
+            <div class="form-field">
+                <label for="name">
+                    Course Name
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                >
+            </div>
+
+
+            <div class="form-field">
+                <label for="description">
+                    Description
+                    <span class="required">*</span>
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    required
+                ></textarea>
+            </div>
+
+
+            <div class="form-actions">
+                <button
+                    type="submit"
+                    name="action"
+                    value="add"
+                >
+                    Add Course
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <div class="courses-section-header">
+
+        <h2>Your Courses</h2>
+
+        <span class="course-count">
+            {{ courses|length }} courses
+        </span>
+
+    </div>
+
+
+    <div class="course-list">
+
+        {% for course in courses %}
+
+            <div class="course-card">
+
+                <div class="course-details">
+
+                    <h3>{{ course["name"] }}</h3>
+
+                    <p>{{ course["description"] }}</p>
+
+                </div>
+
+
+                <form method="POST" class="course-delete-form">
+
+                    <input
+                        type="hidden"
+                        name="course_id"
+                        value="{{ course['id'] }}"
+                    >
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="delete"
+                        class="delete-button"
+                    >
+                        Delete
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endblock %}
