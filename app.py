@@ -211,7 +211,6 @@ def edit_session(session_id):
         session=session
     )
 
-
 @main.route("/dashboard")
 def dashboard():
 
@@ -219,6 +218,10 @@ def dashboard():
 
     total_study_time = connection.execute(
         "SELECT SUM(duration) FROM sessions"
+    ).fetchone()[0] or 0
+
+    courses_studied = connection.execute(
+        "SELECT COUNT(DISTINCT course_id) FROM sessions"
     ).fetchone()[0]
 
     study_time_by_course = connection.execute(
@@ -228,6 +231,42 @@ def dashboard():
         FROM sessions
         JOIN courses ON sessions.course_id = courses.id
         GROUP BY courses.id
+        ORDER BY total_duration DESC
+        LIMIT 5
+        """
+    ).fetchall()
+
+    max_study_time = (
+        study_time_by_course[0]["total_duration"]
+        if study_time_by_course
+        else 0
+    )
+
+    course_summary = []
+
+    for course in study_time_by_course:
+
+        percentage = (
+            (course["total_duration"] / max_study_time) * 100
+            if max_study_time > 0
+            else 0
+        )
+
+        course_summary.append({
+            "name": course["name"],
+            "total_duration": course["total_duration"],
+            "percentage": percentage
+        })
+
+    recent_sessions = connection.execute(
+        """
+        SELECT courses.name,
+               sessions.date,
+               sessions.duration
+        FROM sessions
+        JOIN courses ON sessions.course_id = courses.id
+        ORDER BY sessions.date DESC, sessions.id DESC
+        LIMIT 5
         """
     ).fetchall()
 
@@ -236,8 +275,11 @@ def dashboard():
     return render_template(
         "dashboard.html",
         total_study_time=total_study_time,
-        study_time_by_course=study_time_by_course
+        courses_studied=courses_studied,
+        study_time_by_course=course_summary,
+        recent_sessions=recent_sessions
     )
+
 
 
 # Register all routes under /clock-in

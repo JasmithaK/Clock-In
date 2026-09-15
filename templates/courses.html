@@ -4,32 +4,117 @@
 
 {% block content %}
 
-    <h1>My Courses</h1>
+    <div class="page-header">
+        <h1>My Courses</h1>
+        <p class="page-subtitle">
+            Manage the courses you are currently studying.
+        </p>
+    </div>
 
-    <form method="POST">
-        <label for="name">Course Name:</label>
-        <input type="text" id="name" name="name">
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description"></textarea>
+    <div class="course-form-card">
 
-        <button type="submit" name="action" value="add">Add Course</button>
-    </form>
+        <h2>Add Course</h2>
 
-    {% for course in courses %}
+        <p class="required-note">
+            Fields marked with <span class="required">*</span> are required.
+        </p>
 
-        <div class="course-card">
+        <form method="POST">
 
-            <h2>{{ course["name"] }}</h2>
-            <p>{{ course["description"] }}</p>
+            <div class="form-field">
+                <label for="name">
+                    Course Name
+                    <span class="required">*</span>
+                </label>
 
-            <form method="POST">
-                <input type="hidden" name="course_id" value="{{ course['id'] }}">
-                <button type="submit" name="action" value="delete">Delete</button>
-            </form>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                >
+            </div>
 
-        </div>
 
-    {% endfor %}
+            <div class="form-field">
+                <label for="description">
+                    Description
+                    <span class="required">*</span>
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    required
+                ></textarea>
+            </div>
+
+
+            <div class="form-actions">
+                <button
+                    type="submit"
+                    name="action"
+                    value="add"
+                >
+                    Add Course
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <div class="courses-section-header">
+
+        <h2>Your Courses</h2>
+
+        <span class="course-count">
+            {{ courses|length }} courses
+        </span>
+
+    </div>
+
+
+    <div class="course-list">
+
+        {% for course in courses %}
+
+            <div class="course-card">
+
+                <div class="course-details">
+
+                    <h3>{{ course["name"] }}</h3>
+
+                    <p>{{ course["description"] }}</p>
+
+                </div>
+
+
+                <form method="POST" class="course-delete-form">
+
+                    <input
+                        type="hidden"
+                        name="course_id"
+                        value="{{ course['id'] }}"
+                    >
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="delete"
+                        class="delete-button"
+                    >
+                        Delete
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
 
 {% endblock %}
