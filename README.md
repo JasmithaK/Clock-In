@@ -74,3 +74,12 @@ Clock In is designed around three main areas: course management, study-session m
 
 - Dashboard and Statistics
   The dashboard summarizes the user's study activity by calculating total study time and time spent on        individual courses.
+
+
+  **#6. Video Demo:**
+
+    https://github.com/user-attachments/assets/e3a5e2a6-eac6-4ea5-95e9-c25630896c07
+
+
+
+
