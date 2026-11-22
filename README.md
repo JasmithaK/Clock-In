@@ -1,4 +1,5 @@
 **1. Project Overview:**
+
 Clock In is a web-based study tracking application developed using Python, Flask, and SQLite. The purpose of the project is to help students manage their study schedules, record the time they spend working on different courses, and better understand their study habits.
 
 The application allows users to create and organize courses, record individual study sessions, add optional notes, and review their previous study activities. It also provides basic statistics, such as total study time and the amount of time spent on each course.
@@ -7,6 +8,7 @@ The project combines several important areas of software development, including 
 
 
 **2. Project Objectives:**
+
 The main objective of Clock In is to create a simple and practical tool that encourages students to become more organized and aware of how they spend their study time.
 
 The specific objectives include:
@@ -21,6 +23,7 @@ The specific objectives include:
 
 
 **3. Development Process:**
+
 The development of Clock In follows a step-by-step approach, beginning with planning and database design before moving into application development, testing, and documentation.
 
 The project is divided into several stages to make development more manageable and ensure that the essential features work before additional features are introduced.
@@ -33,6 +36,7 @@ The final stages focus on improving the user interface, testing functionality, f
 
 
 **4. Technical Methods & Tools:**
+
 Clock In uses a simple three-part architecture consisting of the frontend, backend, and database.
 
 *Backend – Python and Flask*
@@ -48,14 +52,15 @@ SQLite is used to store course information and individual study sessions.
 
 The database consists primarily of two tables:
 
-  -Courses: Stores course information, including a unique course ID and course name.
+  - Courses: Stores course information, including a unique course ID and course name.
 
-  -Study Sessions: Stores individual study records, including a session ID, associated course ID, study        date, duration in minutes, and optional notes.
+  - Study Sessions: Stores individual study records, including a session ID, associated course ID, study        date, duration in minutes, and optional notes.
 
 The two tables are connected through a foreign key relationship. This allows each study session to be associated with a specific course.
 
 
 **5. Application Features & Functionalities:**
+
 Clock In is designed around three main areas: course management, study-session management, and study statistics.
 
 - Course Management
